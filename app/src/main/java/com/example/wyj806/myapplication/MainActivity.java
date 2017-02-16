@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
 
 
             AssetFileDescriptor sampleFD = getResources().openRawResourceFd(R.raw.sound2);
-            AssetFileDescriptor sampleFD_tmp = getResources().openRawResourceFd(R.raw.sound1);
+            AssetFileDescriptor sampleFD_tmp = getResources().openRawResourceFd(R.raw.sound2);
 
             MediaExtractor extractor;
             MediaCodec codec;
@@ -71,14 +71,14 @@ public class MainActivity extends AppCompatActivity {
             MediaFormat format22 = codec.getOutputFormat();
             //  codecInputBuffers = codec.getInputBuffer();
             //  codecOutputBuffers = codec.getOutputBuffers();
-          //  int sampleRate = format.getInteger(MediaFormat.KEY_SAMPLE_RATE);
-            int sampleRate = format22.getInteger(MediaFormat.KEY_SAMPLE_RATE);
-            int channel = format22.getInteger(MediaFormat.KEY_CHANNEL_MASK);
-            int buffsize = AudioTrack.getMinBufferSize(48000, AudioFormat.CHANNEL_OUT_MONO, AudioFormat.ENCODING_PCM_16BIT);
+            int sampleRate = format.getInteger(MediaFormat.KEY_SAMPLE_RATE);
+//            int sampleRate = format22.getInteger(MediaFormat.KEY_SAMPLE_RATE);
+            int channelConfig = format.getInteger(MediaFormat.KEY_CHANNEL_COUNT) == 1 ? AudioFormat.CHANNEL_OUT_MONO : AudioFormat.CHANNEL_OUT_STEREO;
+            int buffsize = AudioTrack.getMinBufferSize(sampleRate, channelConfig, AudioFormat.ENCODING_PCM_16BIT);
             // create an audiotrack object
 
-            AudioTrack audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC, 48000,
-                    AudioFormat.CHANNEL_OUT_MONO,
+            AudioTrack audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC, sampleRate,
+                    channelConfig,
                     AudioFormat.ENCODING_PCM_16BIT,
                     buffsize,
                     AudioTrack.MODE_STREAM);
@@ -133,8 +133,7 @@ public class MainActivity extends AppCompatActivity {
                     codecOutputBuffers = codec.getOutputBuffers();
                 } else if (res == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED) {
                     final MediaFormat oformat = codec.getOutputFormat();
-                    Log.d(LOG_TAG, "Output format has changed to " + oformat);
-                   // audioTrack.setPlaybackRate(oformat.getInteger(MediaFormat.KEY_SAMPLE_RATE));
+//                   audioTrack.setPlaybackRate(oformat.getInteger(MediaFormat.KEY_SAMPLE_RATE));
                 }
 
             }
